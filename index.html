@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical-Themed Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensures the body takes full viewport height */
+            background-color: #e8f5e9; /* Light green background */
+            color: #333; /* Dark text for readability */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px; /* Increased width */
+            background-color: #ffffff; /* White background for container */
+            border-radius: 12px;
+            padding: 60px; /* Increased padding */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Roboto', sans-serif;
+            font-size: 48px; /* Increased font size */
+            font-weight: bold;
+            color: #66bb6a; /* Green color for logo */
+            margin-bottom: 40px; /* Increased margin */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px; /* Increased margin */
+        }
+
+        .button-container button {
+            background-color: #007bff; /* Blue color for buttons */
+            border: none;
+            color: white;
+            padding: 20px 40px; /* Increased padding */
+            font-size: 24px; /* Increased font size */
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            flex: 1;
+            margin: 0 15px; /* Increased margin */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button-container button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        .button-container .fa-bell {
+            margin-right: 10px;
+        }
+
+        .button-container .fa-plus {
+            margin-right: 10px;
+        }
+
+        .search-bar-container {
+            position: relative;
+            margin-top: 40px; /* Increased margin */
+        }
+
+        .search-bar-container input[type="text"] {
+            width: 100%;
+            padding: 20px 60px 20px 20px; /* Increased padding */
+            font-size: 18px; /* Increased font size */
+            border: 2px solid #66bb6a;
+            border-radius: 50px;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-bar-container button {
+            position: absolute;
+            right: 20px; /* Increased right position */
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 24px; /* Increased font size */
+            color: #66bb6a;
+            transition: color 0.3s ease;
+        }
+
+        .search-bar-container button:hover {
+            color: #388e3c;
+        }
+
+        #medicine-info {
+            display: none;
+            margin-bottom: 40px; /* Increased margin */
+            padding: 20px;
+            background-color: #f1f8e9;
+            border-radius: 10px;
+            border: 2px solid #66bb6a;
+            text-align: left;
+        }
+
+        #item-list {
+            display: none;
+            margin-top: 40px; /* Increased margin */
+            list-style: none;
+            background-color: #78D2DE;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            height: auto;
+            transition: transform 0.5s ease;
+            transform: translateX(-100%);
+        }
+
+        #item-list.show {
+            display: block;
+            transform: translateX(0%);
+        }
+
+        li {
+            padding: 15px; /* Increased padding */
+            background-color: #ffffff;
+            margin-bottom: 15px; /* Increased margin */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-size: 18px; /* Increased font size */
+        }
+
+        li:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            padding: 20px;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .popup.show {
+            display: block;
+        }
+
+        .popup h3 {
+            margin-bottom: 20px;
+        }
+
+        .popup input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .popup button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .popup button:hover {
+            background-color: #0056b3;
+        }
+
+        .popup .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .popup .close-btn:hover {
+            background-color: #b0b0b0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo">MediXpert</div>
+
+        <!-- Buttons -->
+        <div class="button-container">
+            <button onclick="openReminderPopup()"><i class="fas fa-bell"></i> Set Reminder</button>
+            <button onclick="openHealthTipsPopup()"><i class="fas fa-plus"></i> Health Tips</button>
+        </div>
+
+        <!-- Medicine Info -->
+        <div id="medicine-info">
+            <h3>Medicine Information</h3>
+            <p id="generic-name"></p>
+            <p id="composition"></p>
+            <p id="dosage"></p>
+            <p id="side-effects"></p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar-container">
+            <input type="text" id="search-input" placeholder="Search...">
+            <button onclick="searchMedicine()"><i class="fas fa-search"></i></button>
+        </div>
+
+        <!-- List of Items -->
+        <ul id="item-list">
+            <li id="item1" onclick="openLink('https://pharmeasy.in/online-medicine-order/dolo-650mg-strip-of-15-tablets-44140')">Item 1</li>
+            <li id="item2" onclick="openLink('https://www.netmeds.com/prescriptions/okacet-tablet-10-s')">Item 2</li>
+            <li id="item3" onclick="openLink('https://www.1mg.com/drugs/cetrizine-tablet-54921')">Item 3</li>
+        </ul>
+    </div>
+
+    <!-- Set Reminder Popup -->
+    <div id="reminder-popup" class="popup">
+        <button class="close-btn" onclick="closeReminderPopup()">×</button>
+        <h3>Set Reminder</h3>
+        <input type="text" id="reminder-time1" placeholder="Enter time 1 (e.g., 08:00 AM)">
+        <input type="text" id="reminder-time2" placeholder="Enter time 2 (e.g., 01:00 PM)">
+        <input type="text" id="reminder-time3" placeholder="Enter time 3 (e.g., 06:00 PM)">
+        <button onclick="setReminder()">Set</button>
+    </div>
+
+    <!-- Health Tips Popup -->
+    <div id="health-tips-popup" class="popup">
+        <button class="close-btn" onclick="closeHealthTipsPopup()">×</button>
+        <h3>Health Tips</h3>
+        <input type="text" id="whatsapp-number-health-tips" placeholder="Enter WhatsApp number">
+        <input type="email" id="email-health-tips" placeholder="Enter email address">
+        <button onclick="sendHealthTips()">Send</button>
+    </div>
+
+    <!-- Newsletter Popup -->
+    <div id="newsletter-popup" class="popup">
+        <button class="close-btn" onclick="closeNewsletterPopup()">×</button>
+        <h3>Subscribe to Newsletter</h3>
+        <input type="text" id="whatsapp-number" placeholder="Enter WhatsApp number">
+        <input type="email" id="email" placeholder="Enter email address">
+        <label>
+            <input type="checkbox" id="subscribe-newsletter">
+            Agree for Daily Newsletter
+        </label>
+        <button onclick="subscribeNewsletter()">Subscribe</button>
+    </div>
+
+    <script>
+        function searchMedicine() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            
+            // Reset all items to visible
+            document.getElementById('item1').style.display = 'block';
+            document.getElementById('item2').style.display = 'block';
+            document.getElementById('item3').style.display = 'block';
+            
+            if (searchInput === 'paracetamol') {
+                document.getElementById('generic-name').textContent = "Generic Name: ACETAMINOPHEN";
+                document.getElementById('composition').textContent = "Composition: N-ACETL-PARA-AMINOPHENOL";
+                document.getElementById('dosage').textContent = "Dosage: Two 500mg tabs for Adults";
+                document.getElementById('side-effects').textContent = "Side Effects: Mild To Non-Existent";
+                
+                document.getElementById('item1').textContent = "Dolo Paracetamol 650mg Strip Of 15 Tablets ₹34";
+                document.getElementById('item1').setAttribute('onclick', "openLink('https://pharmeasy.in/online-medicine-order/dolo-650mg-strip-of-15-tablets-44140')");
+                
+                document.getElementById('item2').textContent = "Dolo 650 Tablet 15'S ₹35";
+                document.getElementById('item2').setAttribute('onclick', "openLink('https://www.netmeds.com/prescriptions/dolo-650mg-tablet-15-s')");
+                
+                document.getElementById('item3').textContent = "Dolo 650 Tablet ₹35";
+                document.getElementById('item3').setAttribute('onclick', "openLink('https://www.1mg.com/drugs/dolo-650-tablet-74467')");
+                
+                document.getElementById('medicine-info').style.display = 'block';
+            } else if (searchInput === 'cetirizine') {
+                document.getElementById('generic-name').textContent = "Generic Name: CETRIZINE HYDROCHLORIDE";
+                document.getElementById('composition').textContent = "Composition: LEVOCETIRIZINE & DEXTROCETIRIZINE";
+                document.getElementById('dosage').textContent = "Dosage: 1-10mg / day for >6 years";
+                document.getElementById('side-effects').textContent = "Side Effects: HEADACHES AND DRY-MOUTH";
+                
+                document.getElementById('item1').textContent = "Citephi 10mg Strip Of 10 Tablets ₹15";
+                document.getElementById('item1').setAttribute('onclick', "openLink('https://pharmeasy.in/online-medicine-order/citephi-10mg-strip-of-10-tablets-3600237')");
+                
+                document.getElementById('item2').textContent = "Okacet Tablet 10'S ₹18.95";
+                document.getElementById('item2').setAttribute('onclick', "openLink('https://www.netmeds.com/prescriptions/okacet-tablet-10-s')");
+                
+                document.getElementById('item3').textContent = "Cetrizine Tablet ₹13.5";
+                document.getElementById('item3').setAttribute('onclick', "openLink('https://www.1mg.com/drugs/cetrizine-tablet-54921')");
+                
+                document.getElementById('medicine-info').style.display = 'block';
+            } else if (searchInput === 'aciloc') {
+                document.getElementById('generic-name').textContent = "Generic Name: RANTIDINE";
+                document.getElementById('composition').textContent = "Composition: RANTIDINE (150mg)";
+                document.getElementById('dosage').textContent = "Dosage: 1 tab on Sour Throat";
+                document.getElementById('side-effects').textContent = "Side Effects: Mild Or Non-Existent";
+                
+                document.getElementById('item1').textContent = "Aciloc 150mg Strip Of 30 Tablets ₹43";
+                document.getElementById('item1').setAttribute('onclick', "openLink('https://pharmeasy.in/online-medicine-order/aciloc-150mg-strip-of-30-tablets-5603')");
+                
+                document.getElementById('item2').textContent = "Aciloc 150mg Tablet 30'S ₹44";
+                document.getElementById('item2').setAttribute('onclick', "openLink('https://www.netmeds.com/prescriptions/aciloc-150mg-tablet-30-s')");
+                
+                document.getElementById('item3').textContent = "Aciloc 150 Tablet ₹45";
+                document.getElementById('item3').setAttribute('onclick', "openLink('https://www.1mg.com/drugs/aciloc-150-tablet-134660')");
+                
+                document.getElementById('medicine-info').style.display = 'block';
+            } else {
+                document.getElementById('medicine-info').style.display = 'none';
+                document.getElementById('item-list').style.display = 'none';
+            }
+            
+            // Show item list with sliding effect
+            const list = document.getElementById('item-list');
+            list.classList.add('show');
+        }
+
+        function openLink(url) {
+            window.open(url, '_blank');
+        }
+
+        function openReminderPopup() {
+            document.getElementById('reminder-popup').classList.add('show');
+        }
+
+        function closeReminderPopup() {
+            document.getElementById('reminder-popup').classList.remove('show');
+        }
+
+        function setReminder() {
+            const time1 = document.getElementById('reminder-time1').value;
+            const time2 = document.getElementById('reminder-time2').value;
+            const time3 = document.getElementById('reminder-time3').value;
+            alert(`Reminders set for: ${time1}, ${time2}, ${time3}`);
+            closeReminderPopup();
+        }
+
+        function openHealthTipsPopup() {
+            document.getElementById('health-tips-popup').classList.add('show');
+        }
+
+        function closeHealthTipsPopup() {
+            document.getElementById('health-tips-popup').classList.remove('show');
+        }
+
+        function sendHealthTips() {
+            const whatsappNumber = document.getElementById('whatsapp-number-health-tips').value;
+            const email = document.getElementById('email-health-tips').value;
+
+            if (whatsappNumber && email) {
+                alert('Health tips sent successfully!');
+                closeHealthTipsPopup();
+            } else {
+                alert('Please fill in all fields.');
+            }
+        }
+
+        function openNewsletterPopup() {
+            document.getElementById('newsletter-popup').classList.add('show');
+        }
+
+        function closeNewsletterPopup() {
+            document.getElementById('newsletter-popup').classList.remove('show');
+        }
+
+        function subscribeNewsletter() {
+            const whatsappNumber = document.getElementById('whatsapp-number').value;
+            const email = document.getElementById('email').value;
+            const subscribe = document.getElementById('subscribe-newsletter').checked;
+
+            if (whatsappNumber && email && subscribe) {
+                alert('Subscribed successfully!');
+                closeNewsletterPopup();
+            } else {
+                alert('Please fill in all fields and agree to the newsletter.');
+            }
+        }
+    </script>
+</body>
+</html>
